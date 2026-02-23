@@ -31,11 +31,5 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private StatusOrder statusPedido;
 
-    public Order(OrderDTO pedidoDto , Pizza pizza, Customer cliente) {
-        this.dataPedido = pedidoDto.dataPedido();
-        this.pizza = pizza;
-        this.cliente = cliente;
-        this.statusPedido = pedidoDto.statusPedido();
-    }
 
 }

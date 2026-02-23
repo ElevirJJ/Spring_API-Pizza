@@ -16,7 +16,9 @@ public class PizzaService {
     private final PizzaRepository pizzaRepository;
 
     public void createPizza (PizzaDTO dto){
-        var create = new Pizza(dto.nome(), dto.descricao());
+        Pizza create = new Pizza();
+        create.setNome(dto.nome());
+        create.setDescricao(dto.descricao());
         pizzaRepository.save(create);
 
     }
@@ -40,8 +42,8 @@ public class PizzaService {
 
     public void update (Long id, PizzaDTO pizzaDTO){
 
-        Pizza pizzaEntity = pizzaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("pizza não existir"));
+        Pizza pizzaEntity = buscarPorIdPizza(id);
+
 
         pizzaEntity.setId(pizzaEntity.getId());
         pizzaEntity.setNome(pizzaDTO.nome() != null ? pizzaDTO.nome() : pizzaEntity.getNome());

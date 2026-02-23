@@ -20,10 +20,5 @@ public class Customer {
     @Embedded
     private Endereco endereco;
 
-    public Customer(String nome, String telefone, Endereco endereco) {
-        this.nome = nome;
-        this.telefone = telefone;
-        this.endereco = endereco;
 
-    }
 }

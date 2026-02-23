@@ -36,8 +36,8 @@ public class OrderController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity <Void> put (@PathVariable Long id, @RequestBody OrderDTO pedidoDTO){
-        pedidoService.update(id, pedidoDTO, pedidoDTO.pizzaDTO(), pedidoDTO.clienteDTO());
+    public ResponseEntity <Void> put (@PathVariable Long id, @RequestBody OrderDTO orderDTO){
+        pedidoService.update(id, orderDTO);
         return ResponseEntity.ok().build();
     }
 

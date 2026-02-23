@@ -16,8 +16,11 @@ public class CustomerService {
 
 
     public void createCliente (CustomerDTO dto){
-        var create = new Customer(dto.nome(), dto.telefone(), dto.endereco());
-        clienteRepository.save(create);
+        Customer customer = new Customer();
+        customer.setNome(dto.nome());
+        customer.setTelefone(dto.telefone());
+        customer.setEndereco(dto.endereco());
+        clienteRepository.save(customer);
     }
 
     public List<Customer> get (){
@@ -41,8 +44,8 @@ public class CustomerService {
 
     public void updateCliente(Long id, CustomerDTO clienteDTO) {
 
-        Customer clienteEntity = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Customer clienteEntity = buscarClienteID(id);
+
 
         clienteEntity.setNome(clienteDTO.nome() != null ? clienteDTO.nome() : clienteEntity.getNome());
         clienteEntity.setTelefone(clienteDTO.telefone() != null ? clienteDTO.telefone() : clienteEntity.getTelefone());

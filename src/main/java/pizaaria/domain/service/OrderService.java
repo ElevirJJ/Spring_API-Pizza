@@ -65,30 +65,13 @@ public class OrderService {
     }
 
     @Transactional
-    public void update(Long id, OrderDTO pedidoDTO, PizzaDTO pizzaDTO, CustomerDTO clienteDTO) {
+    public void update(Long id, OrderDTO orderDTO) {
 
-        Order orderEntity = pedidosRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        Order orderEntity = buscarId(id);
 
-
-        Pizza pizzaEntity = pizzaService.buscarPorIdPizza(pizzaDTO.id());
-        Customer clienteEntity = clienteService.buscarClienteID(clienteDTO.id());
-
-
-        clienteEntity.setNome(clienteDTO.nome() != null ? clienteDTO.nome() : clienteEntity.getNome());
-        clienteEntity.setTelefone(clienteDTO.telefone() != null ? clienteDTO.telefone() : clienteEntity.getTelefone());
-        clienteEntity.setId(clienteEntity.getId());
-
-        pizzaEntity.setNome(pizzaDTO.nome() != null ? pizzaDTO.nome() : pizzaEntity.getNome());
-        pizzaEntity.setDescricao(pizzaDTO.descricao() != null ? pizzaDTO.descricao() : pizzaEntity.getDescricao());
-        pizzaEntity.setId(pizzaEntity.getId());
-
-
-        orderEntity.setDataPedido(pedidoDTO.dataPedido() != null ? pedidoDTO.dataPedido() : orderEntity.getDataPedido());
-        orderEntity.setStatusPedido(pedidoDTO.statusPedido() != null ? pedidoDTO.statusPedido() : orderEntity.getStatusPedido());
+        orderEntity.setDataPedido(orderDTO.dataPedido() != null ? orderDTO.dataPedido() : orderEntity.getDataPedido());
+        orderEntity.setStatusPedido(orderDTO.statusPedido() != null ? orderDTO.statusPedido() : orderEntity.getStatusPedido());
         orderEntity.setId(orderEntity.getId());
-        orderEntity.setPizza(pizzaEntity);
-        orderEntity.setCliente(clienteEntity);
 
         pedidosRepository.saveAndFlush(orderEntity);
     }

@@ -19,8 +19,5 @@ public class Pizza {
     private String descricao;
 
 
-    public Pizza(String nome, String descricao) {
-        this.nome = nome;
-        this.descricao = descricao;
-    }
+
 }
