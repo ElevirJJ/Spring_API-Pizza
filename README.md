@@ -122,4 +122,4 @@ mvn spring-boot:run
 
 A API estará disponível em:
 
-http://localhost:8081
+http://localhost:8080
