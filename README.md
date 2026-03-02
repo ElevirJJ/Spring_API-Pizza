@@ -2,7 +2,7 @@
 
 API REST desenvolvida em **Java com Spring Boot**, com o tema de **pizzaria**, implementando **CRUD completo** e consumo dos principais **verbos HTTP (GET, POST, PUT, DELETE)**.
 
-O projeto foi criado **para fins de estudo**, com foco em boas práticas de arquitetura, organização em camadas e segurança com JWT.
+O projeto foi criado **para fins de estudo**, com foco em boas práticas de arquitetura, organização em camadas e segurança com JWT chave (PRIVADA e PUBLICA).
 
 ---
 
