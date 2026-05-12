@@ -2,6 +2,7 @@ package pizaaria.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pizaaria.domain.dto.CustomerDTO;
@@ -18,9 +19,9 @@ public class CustomerController {
     private final CustomerService clienteService;
 
     @PostMapping
-    public ResponseEntity<Void> post (@RequestBody @Valid CustomerDTO clienteDTO){
+    public ResponseEntity<Void> post (@RequestBody CustomerDTO clienteDTO){
         clienteService.createCliente(clienteDTO);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping

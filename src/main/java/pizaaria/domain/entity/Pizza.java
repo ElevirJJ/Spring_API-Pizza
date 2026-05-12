@@ -17,6 +17,7 @@ public class Pizza {
     private Long id;
     private String nome;
     private String descricao;
+    private Boolean ativo = true;
 
 
 

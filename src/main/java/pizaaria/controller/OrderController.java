@@ -1,5 +1,6 @@
 package pizaaria.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public class OrderController {
     private final OrderService pedidoService;
 
     @PostMapping
-    public ResponseEntity<Void> Post (@RequestBody OrderDTO pizzaDTO){
-        pedidoService.createPedido(pizzaDTO);
+    public ResponseEntity<Void> Post (@Valid @RequestBody OrderDTO pizzaDTO){
+        pedidoService.createOrder(pizzaDTO);
         return ResponseEntity.ok().build();
 
     }

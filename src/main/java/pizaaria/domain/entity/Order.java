@@ -19,6 +19,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime dataPedido;
+    private Boolean ativo = true;
 
     @ManyToOne
     @JoinColumn(name = "pizza_id")
@@ -26,7 +27,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private Customer cliente;
+    private Customer customer;
 
     @Enumerated(EnumType.STRING)
     private StatusOrder statusPedido;

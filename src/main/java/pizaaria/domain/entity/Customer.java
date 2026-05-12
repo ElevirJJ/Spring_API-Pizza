@@ -16,6 +16,7 @@ public class Customer {
     private Long id;
     private String nome;
     private String telefone;
+    private Boolean ativo = true;
 
     @Embedded
     private Endereco endereco;

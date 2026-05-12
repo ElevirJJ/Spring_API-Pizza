@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pizaaria.domain.dto.PizzaDTO;
 import pizaaria.domain.entity.Pizza;
+import pizaaria.domain.exception.NotFoundException;
 import pizaaria.repository.PizzaRepository;
 
 import java.util.List;
@@ -29,15 +30,13 @@ public class PizzaService {
 
     public Pizza buscarPorIdPizza (Long id){
         return pizzaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("pizza não existir com esse " + id));
+                .orElseThrow(() -> new NotFoundException("pizza nao existir com esse " + id));
     }
 
     public void deleteId (Long id){
-        if (pizzaRepository.existsById(id)){
-            pizzaRepository.deleteById(id);
-        }else {
-            throw new RuntimeException(id + "não existir no banco");
-        }
+        var pizzaDelete = buscarPorIdPizza(id);
+        pizzaDelete.setAtivo(false);
+        pizzaRepository.save(pizzaDelete);
     }
 
     public void update (Long id, PizzaDTO pizzaDTO){

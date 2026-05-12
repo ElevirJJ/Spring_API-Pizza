@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pizaaria.domain.dto.CustomerDTO;
 import pizaaria.domain.entity.Customer;
+import pizaaria.domain.exception.NotFoundException;
 import pizaaria.repository.CustomerRepository;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CustomerService {
         customer.setTelefone(dto.telefone());
         customer.setEndereco(dto.endereco());
         clienteRepository.save(customer);
+
     }
 
     public List<Customer> get (){
@@ -29,16 +31,14 @@ public class CustomerService {
 
     public Customer buscarClienteID (Long id){
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("cliente não existir com o " + id));
+                .orElseThrow(() -> new NotFoundException("cliente nao existir com o " + id));
 
     }
 
     public void deleteId(Long id){
-        if (clienteRepository.existsById(id)){
-            clienteRepository.deleteById(id);
-        }else {
-            throw new IllegalArgumentException("cliente com " + id + " não existir");
-        }
+       var customDelete = buscarClienteID(id);
+       customDelete.setAtivo(false);
+       clienteRepository.save(customDelete);
     }
 
 
