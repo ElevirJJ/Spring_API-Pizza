@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import pizaaria.domain.dto.OrderDTO;
 import pizaaria.domain.entity.Order;
 import pizaaria.domain.exception.NotFoundException;
+import pizaaria.domain.message.event.OrderEvent;
+import pizaaria.domain.message.produce.OrderProduce;
 import pizaaria.domain.status.StatusOrder;
 import pizaaria.repository.OrderRepository;
 
@@ -20,6 +22,7 @@ public class OrderService {
     private final OrderRepository pedidosRepository;
     private final PizzaService pizzaService;
     private final CustomerService clienteService;
+    private final OrderProduce orderProduce;
 
 
     public void createOrder(OrderDTO dto) {
@@ -36,7 +39,18 @@ public class OrderService {
                 .customer(customerPost)
                 .build();
 
-        pedidosRepository.saveAndFlush(newPedido);
+         var orderSalvo = pedidosRepository.save(newPedido);
+
+         OrderEvent event = new OrderEvent(
+                orderSalvo.getId(),
+                customerPost.getId(),
+                pizzaPost.getId(),
+                orderSalvo.getStatusPedido(),
+                orderSalvo.getDataPedido()
+        );
+
+        orderProduce.enviarOrder(event);
+
     }
 
     public List<Order> get (){
