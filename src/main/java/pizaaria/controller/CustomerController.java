@@ -1,6 +1,6 @@
 package pizaaria.controller;
 
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,6 @@ import pizaaria.domain.dto.CustomerDTO;
 import pizaaria.domain.entity.Customer;
 import pizaaria.domain.service.CustomerService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
@@ -23,15 +22,17 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Void> post (@RequestBody CustomerDTO clienteDTO){
         clienteService.createCliente(clienteDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Page<CustomerDTO> getList (Pageable pageable){
      return clienteService.get(pageable);
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Customer> getID (@PathVariable Long id){
         return ResponseEntity.ok(clienteService.buscarClienteID(id));
     }
@@ -39,13 +40,13 @@ public class CustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> put(@PathVariable Long id, @RequestBody CustomerDTO clienteDTO){
         clienteService.updateCliente(id, clienteDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteId (@PathVariable Long id){
         clienteService.deleteId(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

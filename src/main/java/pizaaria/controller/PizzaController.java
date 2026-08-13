@@ -22,7 +22,7 @@ public class PizzaController {
     @PostMapping
     public ResponseEntity<Void> Post (@RequestBody PizzaDTO pizzaDTO){
         pizzaService.createPizza(pizzaDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
@@ -32,6 +32,7 @@ public class PizzaController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity <Pizza> buscId (@PathVariable Long id){
         return ResponseEntity.ok(pizzaService.buscarPorIdPizza(id));
     }
@@ -39,14 +40,14 @@ public class PizzaController {
     @PutMapping("/{id}")
     public ResponseEntity <Void> put (@PathVariable Long id, @RequestBody PizzaDTO pizzaDTO){
         pizzaService.update(id, pizzaDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete (@PathVariable Long id){
         pizzaService.deleteId(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 
