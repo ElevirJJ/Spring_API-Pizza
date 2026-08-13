@@ -1,6 +1,8 @@
 package pizaaria.domain.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pizaaria.domain.dto.PizzaDTO;
 import pizaaria.domain.entity.Pizza;
@@ -24,8 +26,10 @@ public class PizzaService {
 
     }
 
-    public List<Pizza> get (){
-        return pizzaRepository.findAll();
+    public Page<PizzaDTO> get (Pageable pageable){
+        return pizzaRepository.findAll(pageable)
+                .map(p-> new PizzaDTO(p.getId(), p.getNome(), p.getDescricao()));
+
     }
 
     public Pizza buscarPorIdPizza (Long id){

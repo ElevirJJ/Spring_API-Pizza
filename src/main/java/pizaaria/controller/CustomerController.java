@@ -2,6 +2,8 @@ package pizaaria.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +27,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Customer>> getList (){
-       var getCliente =  clienteService.get();
-        return ResponseEntity.ok(getCliente);
+    public Page<CustomerDTO> getList (Pageable pageable){
+     return clienteService.get(pageable);
     }
 
     @GetMapping("/{id}")

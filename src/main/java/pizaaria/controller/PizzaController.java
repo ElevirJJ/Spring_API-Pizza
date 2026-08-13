@@ -1,6 +1,9 @@
 package pizaaria.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pizaaria.domain.dto.PizzaDTO;
@@ -23,9 +26,9 @@ public class PizzaController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Pizza>> get (){
-        var list = pizzaService.get();
-        return ResponseEntity.ok(list);
+    @ResponseStatus(HttpStatus.OK)
+    public Page<PizzaDTO> get (Pageable pageable){
+        return pizzaService.get(pageable);
     }
 
     @GetMapping("/{id}")

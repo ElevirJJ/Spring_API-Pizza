@@ -1,21 +1,19 @@
 package pizaaria.domain.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pizaaria.domain.dto.CustomerDTO;
 import pizaaria.domain.dto.OrderDTO;
-import pizaaria.domain.dto.PizzaDTO;
 import pizaaria.domain.entity.Order;
 import pizaaria.domain.exception.NotFoundException;
 import pizaaria.domain.message.event.OrderEvent;
 import pizaaria.domain.message.produce.OrderProduce;
 import pizaaria.domain.status.StatusOrder;
 import pizaaria.repository.OrderRepository;
-
-
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Service
 
@@ -37,8 +35,8 @@ public class OrderService {
     public void createOrder(OrderDTO dto) {
 
 
-        var pizzaPost = pizzaService.buscarPorIdPizza(dto.pizzaDTO().id());
-        var customerPost = clienteService.buscarClienteID(dto.clienteDTO().id());
+        var pizzaPost = pizzaService.buscarPorIdPizza(dto.pizzaDTO().getId());
+        var customerPost = clienteService.buscarClienteID(dto.clienteDTO().getId());
 
         var status = dto.statusPedido() != null ? dto.statusPedido() : StatusOrder.PENDENTE;
         var data = dto.dataPedido() != null ? dto.dataPedido() : LocalDateTime.now();
@@ -53,33 +51,24 @@ public class OrderService {
 
          var orderSalvo = pedidosRepository.save(newPedido);
 
-        PizzaDTO pizzaDTO = new PizzaDTO(
-                pizzaPost.getId(),
-                pizzaPost.getNome(),
-                pizzaPost.getDescricao()
-        );
-
-        CustomerDTO customerDTO = new CustomerDTO(
-                customerPost.getId(),
-                customerPost.getNome(),
-                customerPost.getTelefone(),
-                customerPost.getEndereco()
-        );
 
          OrderEvent event = new OrderEvent(
-                orderSalvo.getId(),
-                customerDTO,
-                pizzaDTO,
-                orderSalvo.getStatusPedido(),
-                orderSalvo.getDataPedido()
+              orderSalvo.getId(),
+              orderSalvo.getPizza().getId(),
+              orderSalvo.getCustomer().getId(),
+              orderSalvo.getStatusPedido(),
+              orderSalvo.getDataPedido()
+
         );
 
         orderProduce.enviarOrder(event);
 
     }
 
-    public List<Order> get (){
-       return pedidosRepository.findAll();
+    public Page<OrderDTO> get(Pageable pageable) {
+        return pedidosRepository.findAll(pageable)
+                .map(order -> new OrderDTO(order.getDataPedido(), order.getCustomer(), order.getPizza(), order.getStatusPedido()));
+
     }
 
     public Order buscarId (Long id){

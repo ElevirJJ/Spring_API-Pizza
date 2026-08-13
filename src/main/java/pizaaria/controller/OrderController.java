@@ -2,13 +2,14 @@ package pizaaria.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pizaaria.domain.dto.OrderDTO;
 import pizaaria.domain.entity.Order;
 import pizaaria.domain.service.OrderService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
@@ -25,9 +26,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity <List<Order>> get (){
-        var list = pedidoService.get();
-        return ResponseEntity.ok(list);
+    public Page<OrderDTO> get (Pageable pageable){
+       return pedidoService.get(pageable);
     }
 
     @GetMapping("/{id}")

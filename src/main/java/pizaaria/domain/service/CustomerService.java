@@ -1,6 +1,8 @@
 package pizaaria.domain.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pizaaria.domain.dto.CustomerDTO;
 import pizaaria.domain.entity.Customer;
@@ -25,8 +27,9 @@ public class CustomerService {
 
     }
 
-    public List<Customer> get (){
-        return clienteRepository.findAll();
+    public Page<CustomerDTO> get (Pageable pageable){
+        return clienteRepository.findAll(pageable)
+                .map(c -> new CustomerDTO(c.getId(), c.getNome(), c.getTelefone(), c.getEndereco()));
     }
 
     public Customer buscarClienteID (Long id){

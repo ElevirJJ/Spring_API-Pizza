@@ -10,9 +10,9 @@ public record OrderEvent(
 
         Long orderId,
 
-        CustomerDTO cliente,
+        Long clienteId,
 
-        PizzaDTO pizza,
+        Long pizzaId,
 
         StatusOrder statusPedido,
 
