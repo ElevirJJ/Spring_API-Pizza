@@ -106,20 +106,69 @@ A aplicação segue uma separação em camadas:
 }
 
 
-▶️ Como Executar o Projeto
+## ▶️ Como Executar o Projeto
 
-Clone o repositório
+### 1. Clone o projeto Producer
 
-git clone https://github.com/seu-usuario/spring-api-pizzaria.git
+```bash
+git clone https://github.com/ElevirJJ/Spring_API-Pizza.git
+cd Spring_API-Pizza
+```
 
-Configure o banco de dados MySQL
+### 2. Suba os containers com Docker
 
-Ajuste o application.properties
+Certifique-se de que o Docker esteja em execução e execute:
 
-Execute a aplicação
+```bash
+docker compose up -d
+```
 
+Esse comando irá subir os serviços necessários para o projeto, incluindo o RabbitMQ.
+
+### 3. Clone o projeto Consumer
+
+Em outro diretório, clone o projeto responsável por consumir as mensagens do RabbitMQ:
+
+```bash
+git clone https://github.com/ElevirJJ/Consume_RabbitMQ.git
+cd Consume_RabbitMQ
+```
+
+### 4. Configure o banco de dados
+
+Ajuste as configurações do banco de dados no arquivo:
+
+```text
+src/main/resources/application.properties
+```
+
+### 5. Execute a aplicação Producer
+
+No projeto principal, execute:
+
+```bash
 mvn spring-boot:run
+```
+
+### 6. Execute o Consumer
+
+No projeto `Consume_RabbitMQ`, execute:
+
+```bash
+mvn spring-boot:run
+```
+
+### 🌐 Acesso à API
 
 A API estará disponível em:
 
-http://localhost:8080
+```text
+http://localhost:8081
+```
+
+### 🐰 RabbitMQ
+
+Com o Docker em execução, o RabbitMQ estará disponível para comunicação entre o **Producer** e o **Consumer**.
+
+O projeto utiliza o RabbitMQ para implementar a comunicação assíncrona entre as aplicações, onde o **Producer** envia os eventos e o **Consumer** recebe e processa essas mensagens.
+
