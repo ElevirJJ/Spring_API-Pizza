@@ -1,6 +1,8 @@
 package pizaaria.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pizaaria.adapters.in.web.dto.PizzaDTO;
 import pizaaria.adapters.out.persistence.entityJpa.PizzaJpaEntity;
@@ -24,8 +26,15 @@ public class PizzaService {
 
     }
 
+<<<<<<< HEAD:src/main/java/pizaaria/application/service/PizzaService.java
     public List<PizzaJpaEntity> get (){
         return pizzaRepository.findAll();
+=======
+    public Page<PizzaDTO> get (Pageable pageable){
+        return pizzaRepository.findAll(pageable)
+                .map(p-> new PizzaDTO(p.getId(), p.getNome(), p.getDescricao()));
+
+>>>>>>> dc391396d247377713b0040804df70147c5a1e60:src/main/java/pizaaria/domain/service/PizzaService.java
     }
 
     public PizzaJpaEntity buscarPorIdPizza (Long id){
