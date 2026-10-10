@@ -18,8 +18,8 @@ public class Order {
     private LocalDateTime dataPedido;
     private Boolean ativo = true;
 
-    private PizzaJpaEntity pizza;
-    private CustomerJpaEntity customer;
+    private Pizza pizza;
+    private Customer customer;
 
     private StatusOrder statusPedido;
 

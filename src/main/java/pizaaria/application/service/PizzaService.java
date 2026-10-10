@@ -1,54 +1,72 @@
 package pizaaria.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pizaaria.adapters.in.web.dto.PizzaDTO;
 import pizaaria.adapters.out.persistence.entityJpa.PizzaJpaEntity;
+import pizaaria.domain.entityDominio.Pizza;
 import pizaaria.domain.exception.NotFoundException;
 import pizaaria.adapters.out.repository.PizzaRepository;
+import pizaaria.domain.port.in.PizzaCase;
+import pizaaria.domain.port.out.PizzaRepositoryPort;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class PizzaService {
+public class PizzaService implements PizzaCase {
 
 
-    private final PizzaRepository pizzaRepository;
+    private final PizzaRepositoryPort pizzaRepositoryPort;
+    private final ModelMapper modelMapper;
 
-    public void createPizza (PizzaDTO dto){
-        PizzaJpaEntity create = new PizzaJpaEntity();
-        create.setNome(dto.nome());
-        create.setDescricao(dto.descricao());
-        pizzaRepository.save(create);
-
+    public PizzaService(PizzaRepositoryPort pizzaRepositoryPort, ModelMapper modelMapper) {
+        this.pizzaRepositoryPort = pizzaRepositoryPort;
+        this.modelMapper = modelMapper;
     }
 
-    public List<PizzaJpaEntity> get (){
-        return pizzaRepository.findAll();
+
+    @Override
+    public Pizza createPizza(PizzaDTO pizzaDTO) {
+        Pizza pizza = modelMapper.map(pizzaDTO, Pizza.class);
+
+        return pizzaRepositoryPort.save(pizza);
     }
 
-    public PizzaJpaEntity buscarPorIdPizza (Long id){
-        return pizzaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("pizza nao existir com esse " + id));
+    @Override
+    public List<Pizza> findAll() {
+        return pizzaRepositoryPort.findAll();
     }
 
-    public void deleteId (Long id){
-        var pizzaDelete = buscarPorIdPizza(id);
-        pizzaDelete.setAtivo(false);
-        pizzaRepository.save(pizzaDelete);
+    @Override
+    public Pizza getById(Long id) {
+        return pizzaRepositoryPort.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
     }
 
-    public void update (Long id, PizzaDTO pizzaDTO){
+    @Override
+    public Optional<Pizza> deleteById(Long id) {
+        return pizzaRepositoryPort.deleteById(id)
+                .map(pizza -> {
+                    pizza.setAtivo(false);
+                   return pizzaRepositoryPort.save(pizza);
+                });
+    }
 
-        PizzaJpaEntity pizzaJpaEntityEntity = buscarPorIdPizza(id);
+
+    @Override
+    public Pizza update (Long id, PizzaDTO pizzaDTO) {
+
+        var pizzaJpaEntityEntity = getById(id);
 
 
         pizzaJpaEntityEntity.setId(pizzaJpaEntityEntity.getId());
-        pizzaJpaEntityEntity.setNome(pizzaDTO.nome() != null ? pizzaDTO.nome() : pizzaJpaEntityEntity.getNome());
-        pizzaJpaEntityEntity.setDescricao(pizzaDTO.descricao() != null ? pizzaDTO.descricao()  : pizzaJpaEntityEntity.getDescricao());
+        pizzaJpaEntityEntity.setNome(pizzaDTO.getNome() != null ? pizzaDTO.getNome() : pizzaJpaEntityEntity.getNome());
+        pizzaJpaEntityEntity.setDescricao(pizzaDTO.getDescricao() != null ? pizzaDTO.getDescricao() : pizzaJpaEntityEntity.getDescricao());
 
-        pizzaRepository.saveAndFlush(pizzaJpaEntityEntity);
 
+
+        return pizzaRepositoryPort.save(pizzaJpaEntityEntity);
     }
 }

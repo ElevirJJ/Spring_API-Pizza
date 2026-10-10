@@ -1,57 +1,60 @@
 package pizaaria.application.service;
-import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pizaaria.adapters.in.web.dto.CustomerDTO;
-import pizaaria.adapters.out.persistence.entityJpa.CustomerJpaEntity;
+import pizaaria.domain.entityDominio.Customer;
 import pizaaria.domain.exception.NotFoundException;
-import pizaaria.adapters.out.repository.CustomerRepository;
-
+import pizaaria.domain.port.in.CustomerCase;
+import pizaaria.domain.port.out.CustomerRepositoryPort;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class CustomerService {
+public class CustomerService implements CustomerCase {
 
-    private final CustomerRepository clienteRepository;
+    private final CustomerRepositoryPort repositoryPort;
+    private final ModelMapper modelMapper;
 
-
-    public void createCliente (CustomerDTO dto){
-        CustomerJpaEntity customerJpaEntity = new CustomerJpaEntity();
-        customerJpaEntity.setNome(dto.nome());
-        customerJpaEntity.setTelefone(dto.telefone());
-        customerJpaEntity.setEnderecoJpaEntity(dto.enderecoJpaEntity());
-        clienteRepository.save(customerJpaEntity);
-
-    }
-
-    public List<CustomerJpaEntity> get (){
-        return clienteRepository.findAll();
-    }
-
-    public CustomerJpaEntity buscarClienteID (Long id){
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("cliente nao existir com o " + id));
-
-    }
-
-    public void deleteId(Long id){
-       var customDelete = buscarClienteID(id);
-       customDelete.setAtivo(false);
-       clienteRepository.save(customDelete);
+    public CustomerService(CustomerRepositoryPort repositoryPort, ModelMapper modelMapper) {
+        this.repositoryPort = repositoryPort;
+        this.modelMapper = modelMapper;
     }
 
 
-    public void updateCliente(Long id, CustomerDTO clienteDTO) {
-
-        CustomerJpaEntity clienteEntity = buscarClienteID(id);
-
-
-        clienteEntity.setNome(clienteDTO.nome() != null ? clienteDTO.nome() : clienteEntity.getNome());
-        clienteEntity.setTelefone(clienteDTO.telefone() != null ? clienteDTO.telefone() : clienteEntity.getTelefone());
-        clienteEntity.setEnderecoJpaEntity(clienteDTO.enderecoJpaEntity() != null ? clienteDTO.enderecoJpaEntity() : clienteEntity.getEnderecoJpaEntity());
-
-        clienteRepository.saveAndFlush(clienteEntity);
+    @Override
+    public Customer createCustomer(CustomerDTO customerDTO) {
+        Customer customerSave = modelMapper.map(customerDTO, Customer.class);
+        return repositoryPort.save(customerSave) ;
     }
 
+    @Override
+    public List<Customer> findAll() {
+        return repositoryPort.findAll();
+    }
 
+    @Override
+    public Customer getById(Long id) {
+        return repositoryPort.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
+    }
+
+    @Override
+    public Optional<Customer> deleteById(Long id) {
+        return repositoryPort.deleteById(id)
+                .map(customer -> {
+                    customer.setAtivo(false);
+                   return repositoryPort.save(customer);
+                });
+    }
+
+    @Override
+    public Customer update(Long id, CustomerDTO customerDTO) {
+        var customerEntity = getById(id);
+
+        customerEntity.setNome(customerDTO.getNome() != null ? customerDTO.getNome() : customerEntity.getNome());
+        customerEntity.setTelefone(customerDTO.getTelefone() != null ? customerDTO.getTelefone() : customerEntity.getTelefone());
+        customerEntity.setEndereco(customerDTO.getEndereco() != null ? customerDTO.getEndereco() : customerEntity.getEndereco());
+
+        return repositoryPort.save(customerEntity);
+    }
 }

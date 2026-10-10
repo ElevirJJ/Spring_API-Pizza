@@ -22,11 +22,11 @@ public class OrderJpaEntity {
 
     @ManyToOne
     @JoinColumn(name = "pizza_id")
-    private PizzaJpaEntity pizzaJpaEntity;
+    private PizzaJpaEntity pizza;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private CustomerJpaEntity customerJpaEntity;
+    private CustomerJpaEntity customer;
 
     @Enumerated(EnumType.STRING)
     private StatusOrder statusPedido;

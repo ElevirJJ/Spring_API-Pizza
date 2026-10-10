@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface OrderCase {
     Order createOrder (OrderDTO orderDTO);
     Optional<Order> deleteById(Long id);
-    Optional<Order> getById(Long id);
+    Order getById(Long id);
     List<Order> findAll();
     Order update (Long id, OrderDTO orderDTO);
 }

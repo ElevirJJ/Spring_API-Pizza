@@ -19,7 +19,7 @@ public class CustomerJpaEntity {
     private Boolean ativo = true;
 
     @Embedded
-    private EnderecoJpaEntity enderecoJpaEntity;
+    private EnderecoJpaEntity endereco;
 
 
 }

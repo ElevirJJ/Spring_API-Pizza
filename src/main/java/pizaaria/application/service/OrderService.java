@@ -1,4 +1,5 @@
 package pizaaria.application.service;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pizaaria.adapters.in.web.dto.CustomerDTO;
 import pizaaria.adapters.in.web.dto.OrderDTO;
@@ -23,22 +24,24 @@ public class OrderService implements OrderCase {
     private final CustomerService customerService;
     private final OrderProduce orderProduce;
     private final OrderRespositoryPort orderRespositoryPort;
+    private final ModelMapper modelMapper;
 
-    public OrderService(PizzaService pizzaService, CustomerService customerService, OrderProduce orderProduce, OrderRespositoryPort orderRespositoryPort) {
+    public OrderService(PizzaService pizzaService, CustomerService customerService, OrderProduce orderProduce, OrderRespositoryPort orderRespositoryPort, ModelMapper modelMapper) {
         this.pizzaService = pizzaService;
         this.customerService = customerService;
         this.orderProduce = orderProduce;
         this.orderRespositoryPort = orderRespositoryPort;
+        this.modelMapper = modelMapper;
     }
 
 
     @Override
     public Order createOrder(OrderDTO orderDTO) {
-        var pizzaPost = pizzaService.buscarPorIdPizza(orderDTO.pizzaDTO().id());
-        var customPost =customerService.buscarClienteID(orderDTO.clienteDTO().id());
+        var pizzaPost = pizzaService.getById(orderDTO.getPizzaDTO().getId());
+        var customPost = customerService.getById(orderDTO.getClienteDTO().getId());
 
-        var status = orderDTO.statusPedido() != null ? orderDTO.statusPedido() : StatusOrder.PENDENTE;
-        var date = orderDTO.dataPedido() != null ? orderDTO.dataPedido() : LocalDateTime.now();
+        var status = orderDTO.getStatusPedido() != null ? orderDTO.getStatusPedido() : StatusOrder.PENDENTE;
+        var date = orderDTO.getDataPedido() != null ? orderDTO.getDataPedido() : LocalDateTime.now();
 
         Order newOrder = Order.builder()
                 .pizza(pizzaPost)
@@ -51,20 +54,15 @@ public class OrderService implements OrderCase {
         var orderSave = orderRespositoryPort.save(newOrder);
 
 
-        CustomerDTO customerDTO = new CustomerDTO(
-                orderSave.getCustomer().getId(),
-                orderSave.getCustomer().getNome(),
-                orderSave.getCustomer().getTelefone(),
-                orderSave.getCustomer().getEnderecoJpaEntity()
+        CustomerDTO customerDTO = modelMapper.map(
+                orderSave.getCustomer(),
+                CustomerDTO.class
         );
 
-
-        PizzaDTO pizzaDTO = new PizzaDTO(
-                orderSave.getPizza().getId(),
-                orderSave.getPizza().getNome(),
-                orderSave.getPizza().getDescricao()
+        PizzaDTO pizzaDTO = modelMapper.map(
+                orderSave.getPizza(),
+                PizzaDTO.class
         );
-
 
         OrderEvent event = new OrderEvent(
                 orderSave.getId(),
@@ -82,18 +80,19 @@ public class OrderService implements OrderCase {
 
     @Override
     public Optional<Order> deleteById(Long id) {
-        return orderRespositoryPort.deleteById(id)
-                .map(order -> {
-                    order.setAtivo(false);
-                    return orderRespositoryPort.save(order);
-                });
+       return orderRespositoryPort.deleteById(id)
+               .map(order -> {
+                   order.setAtivo(false);
+                   return orderRespositoryPort.save(order);
+               });
     }
 
 
 
     @Override
-    public Optional<Order> getById(Long id) {
-        return orderRespositoryPort.findById(id);
+    public Order getById(Long id) {
+        return orderRespositoryPort.findById(id)
+                .orElseThrow(() -> new NotFoundException("Pedido não encontrado"));
     }
 
     @Override
@@ -105,14 +104,14 @@ public class OrderService implements OrderCase {
     public Order update(Long id, OrderDTO orderDTO) {
 
 
-        Order orderEntity = getById(id).orElseThrow(() -> new NotFoundException("id não existi"));
+        var orderEntity = getById(id);
 
-        orderEntity.setDataPedido(orderDTO.dataPedido() != null ? orderDTO.dataPedido() : orderEntity.getDataPedido());
-        orderEntity.setStatusPedido(orderDTO.statusPedido() != null ? orderDTO.statusPedido() : orderEntity.getStatusPedido());
+        orderEntity.setDataPedido(orderDTO.getDataPedido() != null ? orderDTO.getDataPedido() : orderEntity.getDataPedido());
+        orderEntity.setStatusPedido(orderDTO.getStatusPedido() != null ? orderDTO.getStatusPedido() : orderEntity.getStatusPedido());
+        orderEntity.setCustomer(orderDTO.getClienteDTO() != null ? customerService.getById(orderDTO.getClienteDTO().getId()) : orderEntity.getCustomer());
+        orderEntity.setPizza(orderDTO.getPizzaDTO() != null ? pizzaService.getById(orderDTO.getPizzaDTO().getId()) : orderEntity.getPizza());
         orderEntity.setId(orderEntity.getId());
 
-        orderRespositoryPort.save(orderEntity);
-
-        return orderEntity;
+        return orderRespositoryPort.save(orderEntity);
     }
 }

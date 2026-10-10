@@ -1,9 +1,19 @@
 package pizaaria.adapters.in.web.dto;
 
-import pizaaria.adapters.out.persistence.entityJpa.EnderecoJpaEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pizaaria.domain.entityDominio.Endereco;
 
-public record CustomerDTO(Long id, String nome, String telefone, EnderecoJpaEntity enderecoJpaEntity) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CustomerDTO {
 
-
-
+    private Long id;
+    private String nome;
+    private String telefone;
+    private Endereco endereco;
 }

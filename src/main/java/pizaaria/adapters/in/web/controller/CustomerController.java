@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pizaaria.adapters.in.web.dto.CustomerDTO;
 import pizaaria.adapters.out.persistence.entityJpa.CustomerJpaEntity;
 import pizaaria.application.service.CustomerService;
+import pizaaria.domain.entityDominio.Customer;
 
 import java.util.List;
 
@@ -19,31 +20,32 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<Void> post (@RequestBody CustomerDTO clienteDTO){
-        clienteService.createCliente(clienteDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        clienteService.createCustomer(clienteDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity <List<CustomerJpaEntity>> getList (){
-       var getCliente =  clienteService.get();
-        return ResponseEntity.ok(getCliente);
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity <List<Customer>> getList() {
+        return ResponseEntity.ok(clienteService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerJpaEntity> getID (@PathVariable Long id){
-        return ResponseEntity.ok(clienteService.buscarClienteID(id));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Customer> getID (@PathVariable Long id){
+        return ResponseEntity.ok(clienteService.getById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> put(@PathVariable Long id, @RequestBody CustomerDTO clienteDTO){
-        clienteService.updateCliente(id, clienteDTO);
-        return ResponseEntity.ok().build();
+        clienteService.update(id, clienteDTO);
+        return ResponseEntity.noContent().build();
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteId (@PathVariable Long id){
-        clienteService.deleteId(id);
-        return ResponseEntity.ok().build();
+        clienteService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

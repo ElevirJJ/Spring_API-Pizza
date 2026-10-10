@@ -2,7 +2,6 @@ package pizaaria.domain.entityDominio;
 
 
 import lombok.*;
-import pizaaria.adapters.out.persistence.entityJpa.EnderecoJpaEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor
